@@ -3,7 +3,7 @@ import numpy as np
 import matplotlib as plot
 import time
 
-# Plotting utility
+# Plotting utilities
 def graph(t, y, true_solution, running_time, h):
     max_error = np.max(np.abs((y - true_solution)))
 
@@ -20,7 +20,8 @@ def graph_lv(t, y):
     plot.title("Run time = {0}, h = {1}".format(running_time, h))
     plot.show()
 
-
+def solve_ode():
+    return
 
 if __name__ == "__main__":
-    main_loop()
+    solve_ode()

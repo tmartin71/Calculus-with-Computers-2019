@@ -7,8 +7,23 @@ def y_prime(t, y):
     return -15*y;
 
 def lotka_volterra(t, y):
-    alpha = 2.0 / 3.0
-    dx = 
+
+    # Caribou growth rate
+    alpha = 1.1
+
+    # Caribou death rate
+    beta = 0.4
+
+    # Wolf death rate
+    gamma = 0.4
+
+    # Wolf growth rate
+    delta = 0.1
+
+    dx = alpha * y[0] - beta * y[1]*y[0]
+    dy = delta * y[0] * y[1] - gamma * y[1]
+
+    return np.array([dx, dy])
 
 def true_solution(t, y):
     return np.exp(-15*t)
@@ -37,14 +52,14 @@ def graph(t, y, true_solution, running_time, h):
     plot.title("Run time = {0}, h = {1}, Max err = {2}".format(running_time, h, max_error))
     plot.show()
 
-def graph_lv(t, y):
-    plot.plot(t, y[1:])
-    plot.plot(t, y[2:])
+def graph_lv(t, y, running_time, h):
+    plot.plot(t, y[0,:])
+    plot.plot(t, y[1,:])
     plot.legend(("Prey population", "Predator population"), loc="upper left")
     plot.title("Run time = {0}, h = {1}".format(running_time, h))
     plot.show()
 
-def main_loop():
+def solve_ode_1d():
 
     # Domain setup
     h = 0.1
@@ -58,7 +73,7 @@ def main_loop():
     num_steps = int((t_max - t_0) / h)
     t = np.linspace(t_0, t_max, num_steps)
     
-    # Solve the differential eqution
+    # Solution array
     y = np.zeros(num_steps)
 
     # Initial condition
@@ -73,6 +88,34 @@ def main_loop():
     y_true = true_solution(t, y)
     graph(t, y, y_true, running_time, h)
 
+def solve_ode_nd():
+
+    # Domain setup
+    h = 0.1
+    t_max = 100
+
+    # Initial conditions
+    t_0 = 0
+    y_0 = np.array([10, 10])
+
+    # Linearly spaced vector of length int(t_max / h)
+    num_steps = int((t_max - t_0) / h)
+    t = np.linspace(t_0, t_max, num_steps)
+    
+    # Solution array
+    y = np.zeros((2, num_steps))
+
+    # Initial condition
+    y[:,0] = y_0
+
+    start_time = time.time()
+    for i in range(0, num_steps - 1):
+        y[:, i + 1] = rk_45_step(h, t[i], y[:,i], lotka_volterra)
+    end_time = time.time()
+
+    running_time = end_time - start_time
+    graph_lv(t, y, running_time, h)
 
 if __name__ == "__main__":
-    main_loop()
+    solve_ode_nd()
+    #main_loop()
